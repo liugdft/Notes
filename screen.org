@@ -1,0 +1,62 @@
+* screen
+** 用法
+*** 会话管理
+ - 新建会话
+#+BEGIN_EXAMPLE
+$ screen -S <session-name>
+#+END_EXAMPLE
+
+- 查看会话列表
+#+BEGIN_EXAMPLE
+$ screen -ls
+#+END_EXAMPLE
+
+- Detatch会话
+#+BEGIN_EXAMPLE
+$ screen -d <session-name>
+#+END_EXAMPLE 
+
+- 重新回到会话
+#+BEGIN_EXAMPLE
+$ screen -r <session-name>
+#+END_EXAMPLE
+
+- 共享会话
+#+BEGIN_EXAMPLE
+$ screen -x <session-name>
+#+END_EXAMPLE
+
+- 关闭会话
+#+BEGIN_EXAMPLE
+Ctrl-a k    # 关闭当前窗口
+Ctrl-a :quit    # 关闭所有窗口并退出会话
+#+END_EXAMPLE
+
+*** screen快捷键
+Ctrl-a 激活控制台
+- 系统操作
+| ? | Help，显示快捷键信息           |
+| d | 脱离当前会话                   |
+| [ | 进入复制模式，可以回滚、搜索   |
+| ] | 把复制模式下复制的内容粘贴上来 |
+|   |                                |
+
+- 窗口操作
+| c       | 创建新窗口                                                   |
+| n       | 切换到下一个窗口                                             |
+| p       | 切换到前一个窗口                                             |
+| Ctrl-a  | 在两个窗口间切换                                             |
+| w       | 列出已开启的窗口                                             |
+| [0-9]   | 切换到指定窗口                                               |
+| t       | 显示当前时间                                                 |
+| k       | 关闭当前窗口                                                 |
+| <Space> | 依次切换窗口                                                 |
+| x       | 锁住当前窗口，需要用户密码解锁                               |
+| z       | 把当前session放到后台执行，fg命名回来                        |
+| a       | 发送Ctrl-a到当前窗口                                         |
+| s       | 水平分割当前窗口                                             |
+| 竖线    | 垂直分割当前窗口                                             |
+| <Tab>   | 在分割的区块间切换，每一个区块需要单独再创建窗口             |
+| X       | 关闭当前区块                                                 |
+| Q       | 关闭当前区块以外的其他区块，区块中的窗口被安排到窗口列表后面 |
+| A       | 重命名当前窗口                                               |

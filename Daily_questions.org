@@ -1,0 +1,9 @@
+* Daily questions
+** 2016.09.04 [2/2]
+- [X] emacs server 模式
+- [X] emacs vim 的yank缓存和粘贴板的区别？ 能否公用？
+
+** 2016.08.20 [2/2]
+- [X] git: rebase后，原分支上的提交会不会被删除？
+- [X] git: rebase过程中，文件出现冲突怎么解决？
+

@@ -1,0 +1,55 @@
+* Archlinux
+** 安装
+
+#+BEGIN_SRC SHELL
+$ sudo pacman -S tigervnc
+#+END_SRC
+
+** 运行vncserver
+
+#+BEGIN_SRC SHELL
+$ vncserver
+#+END_SRC
+
+- 初次运行vncserver会要求设置密码，以供vncviewer连接时认证使用
+- 初次运行后，会自动生成多个配置文件，包括：
+ * ~/.vnc/xstartup    # vncviewer连接时，自启动程序配置文件
+ * ~/.vnc/config    # vncserver参数配置文件
+ * ~/.vnc/<hostname>:1.log    # 日志文件
+
+** 配置vncserver
+
+#+BEGIN_SRC SHELL
+$ vim ~/.vnc/xstartup
+#+END_SRC
+
+- 默认配置中，vncviewer连接时启动xterm桌面环境，可以将默认配置全部删除，加入自己的桌面环境启动命令
+
+#+BEGINE_EXAMPLE
+#!/bin/bash
+exec startlxde
+#+END_EXAMPLE
+
+** 配置vncserver自启动（system模式）
+
+#+BEGINE_SRC SHELL
+$ sudo vim /etc/systemd/system/vncserver@:1.service
+#+END_SRC
+
+#+BEGINE_EXAMPLE
+[Unit]
+Description=Remote desktop service (VNC)
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=<username>    # 运行vncserver服务的用户
+PAMName=login
+
+ExecStartPre=/bin/sh -c '/usr/bin/vncserver -kill %i > /dev/null 2>&1 || :'
+ExecStart=/usr/bin/vncserver -geometry 1440x900 -alwaysshared -fg %i
+ExecStop=/usr/bin/vncserver -kill %i
+
+[Install]
+WantedBy=multi-user.target
+#+END_EXAMPLE

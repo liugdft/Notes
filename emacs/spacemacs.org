@@ -1,0 +1,41 @@
+* spacemacs
+** 安装
+$ git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
+
+然后通过代理启动emacs，它会联网自动安装插件
+
+** 插件管理
++ 查看插件列表
+Alt+x package-list-packages
+
++ 检测并标记有更新的插件
+Alt+x package-menu-mark-upgrade
+
++ 更新插件
+Alt+x package-menu-execute
+
+** 设置fcitx输入法
++ 设置基本的环境变量
+
+.bashrc/.zshrc设置
+export LANG=en_US.UTF-8
+export LC_CTYPE=zh_CN.UTF-8
+
+disable ./Xresources while it inclues:
+emacs*useXIM: false
+  
+In script file .xprofile, add following lines to support GTK+ and Qt modules Fcitx in Arch Linux.
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
+
++ 设置图形界面环境变量
+vim ~/.xprofile
+export LANG=en_US.UTF-8
+export LC_CTYPE=zh_CN.UTF-8
+
+或者
+
+vim /etc/locale.conf
+LANG=en_US.UTF-8
+LC_CTYPE=zh_CN.UTF-8

@@ -1,0 +1,46 @@
+* vim插件
+** 插件管理
++ 安装插件管理插件vundle
+$ git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+
++ 配置
+.vimrc
+
++ 插件安装
+ 1. 配置文件.vimrc中加入：
+Plugin 'plugin_github_path'
+ 2. 打开vim，运行：
+:PluginInstall
+
++ 插件升级
+:PluginUpdate
+
++ 查看插件列表
+:PluginList
+
++ 删除插件
+ 1. 配置文件中删除 Plugin 'plugin_github_path' 配置
+ 2. 运行：
+:PlunginClean
+
+** airline插件
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+
+let g:airline_theme="badwolf"
+let g:airline_powerline_fonts = 1
+
++ 插件安装完后，还需要安装powerline字体，字体设置为Meslo LG S for Powerline xxx，才能正常显示界面
+$ git clone https://github.com/powerline/fonts.git powerline_fonts
+$ cd powerline_fonts; ./install.sh
+
+** 编辑远程文件 
+#+BEGIN_EXAMPLE
+$ vim scp://<username>@<remote_host>//<file_path>/<filename>
+#+END_EXAMPLE
+
+- 或者用sshfs挂载远程目录到本地后编辑
+#+BEGIN_EXAMPLE
+$ sshfs <username>@<remore_host>:/<file_path>/<filename> <localDir>
+$ fusermount -u <localDir>    # 卸载sshfs挂载
+#+END_EXAMPLE

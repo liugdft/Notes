@@ -1,0 +1,67 @@
+* CentOS使用笔记
+** 作为server，初次安装后的基本设置
+- 安装是选择minimal模式，最小规格安装
+*** 系统设置
+**** 设置允许串口登陆
+#+BEGIN_EXAMPLE
+$ sudo vim /etc/default/grub
+GRUB_TIMEOUT=5
+GRUB_DISTRIBUTOR="$(sed 's, release .*$,,g' /etc/system-release)"
+GRUB_DEFAULT=saved
+GRUB_DISABLE_SUBMENU=true
+GRUB_TERMINAL_OUTPUT="console serial"
+GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"
+GRUB_CMDLINE_LINUX="crashkernel=auto rd.lvm.lv=centos/root rd.lvm.lv=centos/swap rhgb quiet console=tty1 console=ttyS0,115200"
+GRUB_DISABLE_RECOVERY="true"
+
+$ sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+$ sudo reboot
+#+END_EXAMPLE
+**** 修改主机名
+#+BEGIN_EXAMPLE
+$ sudo vim /etc/hostname
+$ sudo vim /etc/hosts
+#+END_EXAMPLE
+*** 用户设置
+- 安装常用软件
+#+BEGIN_EXAMPLE
+$ sudo yum install wget vim net-tools git
+#+END_EXAMPLE
+*** 网络设置
+#+BEGIN_EXAMPLE
+$ sudo vim /etc/sysconfig/network-scripts/ifcfg-eth0
+TYPE=Ethernet
+BOOTPROTO=none
+DEFROUTE=yes
+PEERDNS=yes
+PEERROUTES=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_PEERDNS=yes
+IPV6_PEERROUTES=yes
+IPV6_FAILURE_FATAL=no
+NAME=eth0
+UUID=6cf59519-471a-4460-b7f5-0062ababdc18
+DEVICE=eth0
+ONBOOT=yes
+IPADDR=192.168.0.75
+PREFIX=24
+GATEWAY=192.168.0.1
+DNS1=192.168.0.1
+
+$ sudo service network restart
+#+END_EXAMPLE
+*** 更新源
+**** 设置国内更新源
+#+BEGIN_EXAMPLE
+$ sudo mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+# 下载国内镜像的repo文件到yum.repos.d目录下
+$ sudo yum clean all
+$ sudo yum makecache
+$ sudo yum upgrade
+
+$ sudo yum install http://mirrors.ustc.edu.cn/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
+# 手动修改epel.repo，将仓库地址修改为ustc的
+#+END_EXAMPLE

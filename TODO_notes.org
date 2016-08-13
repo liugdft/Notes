@@ -1,0 +1,8 @@
+* Todo notes
+** Linux [1/1] 
+- [X] screen & tmux
+
+** Application [1/3]
+- [ ] ngrok
+- [ ] shadowsocks
+- [X] vim & emacs plugin admin(add, del, update)

@@ -1,0 +1,53 @@
+* Archlinux
+** 安装
+$ sudo pacman -S libvirt virt-install
+
+** 配置
+安装过后，libvirt生成的配置文件包括：
+- /etc/libvirt/libvirt.conf    # libvirt客户端配置文件，可以设置别名等
+- /etc/libvirt/libvirtd.conf    # libvirtd守护进程配置文件，可以设置tls、tcp、\
+UNIX domain socket等链接方式及这些连接的认证机制
+- /etc/libvirt/qemu/    # QEMU虚拟机（域）的配置文件
+
+#+BEGIN_EXAMPLE
+/etc/libvirt/libvirtd.conf
+
+unix_sock_group = "libvirt"
+unix_sock_ro_perms = "0777"  # set to 0770 to deny non-group libvirt users
+unix_sock_rw_perms = "0770"
+auth_unix_ro = "none"
+auth_unix_rw = "none"
+
+# 配置不加密、不认证的tcp连接
+listen_tls = 0
+listen_tcp = 1
+auth_tcp=none
+#+END_EXAMPLE
+
+$ sudo gpasswd -a liugdft libvirt    # 将用户加入libvirt组后，才能远程通过ssh连接到libvirt
+
+** libvirtd运行
+- system模式：
+$ sudo systemctl start libvirtd
+- 命令模式直接运行
+$ libvirtd --listen -d    # 默认配置下，tls连接认证默认打开，tcp连接认证默认关闭
+，但libvirtd默认只监听本地socket连接，没有监听基于网络的TCP/IP socket，--listen
+用于开启这些认证的监听
+
+** virsh连接
+- 本地连接：
+$ virsh -c qemu:///system    # 连接到qemu的system实例
+$ virsh -c qemu:///session   # 连接到qemu的session（用户）实例
+$ virsh -c qemu+unix:///system    #UNIX domain socket方式连接
+$ virsh -c test:///default   # 连接到测试实例
+
+- 网络连接：
+$ virsh -c qemu+ssh://<username>@<remote_host>/system    # ssh方式连接到远程
+$ virsh -c qemu+tls://<remote_host>[:<tls_port>]/system    # tls方式连接到远程
+$ virsh -c qemu://<remote_host>[:<tls_port>]/system    # tls方式连接
+$ virsh -c qemu+tcp://<remote_host>[:<tcp_port>]/system    # 使用非加密的tcp方式
+连接到远程libvirtd
+
+* CentOS
+** 安装
+$ sudo yum install libvirt virt-install
