@@ -1,0 +1,89 @@
+* Git常用命令
+** 简单总结
++ git操作前，先设置用户名和邮箱，因为每次commit都会打上这些信息，便于记录和区别。
+
++ git status显示中文文件名是字符的问题
+git config --global core.quotepath false    # 设置为默认不转义
+
+** Git 本地操作
+*** 初始化配置
+git config --global user.name "LiuGDFT"           # 初始化配置，设置用户名
+git config --global user.email "liugdft@126.com"  # 初始化配置，设置mmail
+git config --list                                 # 检查已有的配置
+
+*** 文件基本操作
+git help <verb>                                   # git命令帮助
+git init                                          # 对当前文件夹进行Git管理
+git add *                                         # 添加当前目录下的所有文件到Git的下一次提交列表中
+git status                                        # 查看本地git管理文件状态
+cat .gitignore                                    # 创建ignore文件记录无需纳入git管理的文件格式
+git diff                                          # 对比当前工作目录文件和最后一次提交时的差异
+git diff --staged/--cached                        # 对比已暂存的文件和最后一次提交时的差异
+git commit                                        # 提交更新，提交所有暂存的文件，命令后会提示输入提交描述
+git commit -m "Your commit notes"                 # 直接提交更新，并且附上简短的提交描述
+git commit -a -m "Your commit notes"              # 把所有跟踪文件暂存并且提交一并提交更新
+git rm EXAMPLE.FILE                               # 从仓库中移除文件跟踪，同时删除该文件
+git rm --cached EXAMPLE.FILE                      # 从仓库中移除文件跟踪，但是不删除该文件
+git mv old_filename new_filename                  # 移动文件/文件改名
+
+*** 查看提交记录
+git log                                           # 查看提交历史
+git log -2                                        # 查看最近的2次更新
+git log --stat                                    # 仅显示简要的整改行数统计
+git log --pretty=oneline                          # 每个提交记录只显示一行
+git log --pretty=format:"%h - %cd : %s"           # 按照指定格式显示提交记录
+git log --pretty=format:"%h %s" --graph           # 用简单图形标示每个提交的分支衍生情况
+
+*** 撤销
+git commit --amend                                # 撤销上一次提交内容，重新提交
+git reset HEAD EXAMPLE.FILE                       # 取消文件的暂存状态
+git checkout -- EXAMPLE.FILE                      # 撤销文件修改，恢复文件上一次提交状态
+
+*** Git 远程仓库
+git remote                                        # 显示远程仓库
+git remote -v                                     # 显示远程仓库地址
+git remote add new_branch git://github.com/githubproject.git          # 添加远程仓库，只在本地创建跟踪分支，fetch后才拉取数据
+git fetch new_branch                              # 拉取数据/下载更新，但不自动合并
+git pull new_branch                               # 拉取更新并自动合并
+git push remote_name local_branch                 # 推送数据到远程仓库
+git remote show remote_name                       # 查看远程仓库信息
+git remote rename old_name new_name               # 远程仓库改名
+git remote rm remote_name                         # 移除远程仓库
+
+*** 标签
+git tag                                           # 列出现有的标签
+git tag -l "v1.1"                                 # 搜索标签
+git tag -a v1.1 -m "my version 1.1"               # 创建一个含附注类型的标签
+git show v1.1                                     # 显示相应标签的版本信息
+git tag -s v1.1 -m "my signed tag 1.1"            # 创建一个用GPG签署的标签
+git tag v1.1                                      # 创建一个轻量级标签
+git tag -v v1.1                                   # 验证已经签署的标签
+git tag -a v1.1 9fceb02                           # 给之前的提交补一个标签
+git push remote_name v1.1                         # 分享标签到远程仓库
+git push remote_name --tags                       # 推送所有（本地新增的）标签到远程仓库
+
+*** 设置别名
+git config --global alias.unstage "reset HEAD --" # 为命令设置别名
+
+** Git 分支
+git branch branch_name                            # 新建分支
+git checkout branch_name                          # 切换到分支
+git merge branch_name                             # 把branch_name合并到当前分支（会生成一个新的合并提交）
+git checkout -b branch_name                       # 新建并切换到分支
+git branch -d branch_name                         # 删除分支
+git mergetool                                     # 调用可视化合并工具（可选）解决冲出
+
+git branch -v                                     # 查看各个分支最后一次commit信息
+git branch --merged                               # 查看哪些分支已经被并入当前分支
+git branch --no-merged                            # 查看哪些分支还没有被合并
+git checkout -b branch_name remote_name/remote_branch                 # 把远程分支新建到本地
+git checkout --track remote_name/remote_branch    # 同上
+
+git rebase branch_name                            # 以branch_name为基，进行分支衍合（分支合并到base分支）
+git rebase --onto branch_name sub_branch1 sub_branch2                 # 忽略sub_branch1的更改，对sub_branch2进行衍合
+git rebase branch_name sub_branch2                # 以branch_name为基，对sub_branch2进行分支衍合
+
+** GitHub
+git clone git://github.com/githubproject.git                  # 克隆远程仓库到本地
+git clone -bare my_project my_project.git         # 把一个仓库克隆为纯仓库（没有当前工作目录）
+git --bare init                                   # 设定一个空仓库

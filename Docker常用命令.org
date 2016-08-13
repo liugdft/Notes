@@ -1,0 +1,193 @@
+* Docker常用命令
+** 简单总结
+ - Docker只能运行和宿主机同构架的镜像，如 RaspberryPi是ARM构架的，安装的系统是32
+位Archlinuxarm，那就只能运行arm构架、32位的linux系统构架
+
+** 环境
+ - Docker可以在Windows和OS X上运行，需要安装Boot2Doker工具，实际就是在VirtualBoX
+上运行的一个Docker虚拟机
+
+ - 运行Docker的守护进程和客户端都需要root权限，但是将用户加入docker组后，对docke
+r的操作权限相当于root
+
+ - Docker图形用户界面：Shipyard
+
+#+BEGIN_SRC SHELL
+# 虚拟机运行后，获取Docker的IP
+$ boot2docker ip
+
+# 默认的Docker守护进程
+$ sudo /usr/bin/docker daemon -H fd://
+
+# 修改Docker守护进程的网络
+$ sudo /usr/bin/docker -d -H tcp://0.0.0.0:2375
+
+# 开启Docker守护进程的调试模式
+$ sudo DEBUG=1 /usr/bin/docker -d -H unix://home/docker/docker.sock
+#+END_SRC
+
+** 容器操作
+#+BEGIN_SRC SHELL
+# 以交互式方式运行一个容器，-i选项保证容器中的STDIN是开启的，-t给容器分配一个伪
+tty，所有容器都保存在/var/lib/docker/containers目录下
+$ sudo docker run -i -t ubuntu /bin/bash
+
+# 查看容器状态
+$ sudo docker ps -a
+
+# 启动容器时给容器命名，否则Docker会自动生成一个随机的名称
+$ sudo docker run --name test_container -i -t ubuntu /bin/bash
+
+# 重新启动已经停止的容器
+$ sudo docker start test_container
+$ sudo docker start c2c4ee57c12c4
+$ sudo docker restart test_container
+
+# 附着（连接）到正在运行的容器
+$ sudo docker attach test_container
+
+# 以守护式方式创建容器
+$ sudo docker run --name test_container -d ubuntu /bin/bash
+
+# 查看守护式容器的日志，Docker会输出最后几条日志并返回
+$ sudo docker logs test_container
+
+# 跟踪守护式容器的日志（日志有更新时会刷新）
+$ sudo docker logs -f test_container
+
+# 跟踪守护式容器的最新日志
+$ sudo docker logs --tail 0 -f test_container
+
+# 查看守护式容器的进程
+$ sudo docker top test_container
+
+# 在容器中运行后台命令
+$ sudo docker exec -d test_container touch /etc/new_config.file
+
+# 在容器中运行交互式命令
+$ sudo docker exec -i -t test_container /bin/bash
+
+# 停止守护式容器
+$ sudo docker stop test_container
+
+# 设置容器异常退出（非0状态码）后自动重启
+$ sudo docker run --restart=on-failure --name test_container -d ubuntu /bin/bash
+$ sudo docker run --restart=always --name test_container -d ubuntu /bin/bash
+
+# 异常退出后，最多尝试重启3次
+$ sudo docker run --restart=on-failure:3 --name test_container -d ubuntu \
+/bin/bash
+
+# 查看容器的详细信息
+$ sudo docker inspect test_container
+
+# 指定需要查看的容器信息
+$ sudo docker inspect --format='{{.State.Running}}' test_container
+$ sudo docker inspect --format='{{.NetworkSettings.IPAddress}}' rest_container
+
+# 一次查看多个容器
+$ sudo docker inspect --format='{{.Name}} {{.State.Running}}' test_container \
+another_container
+
+# 删除容器
+$ sudo docker rm test_container
+$ sudo docker kill -9 test_container
+
+# 一次删除全部容器
+$ sudo docker rm `docker ps -a -q`
+#+END_SRC
+   
+** 镜像操作
+#+BEGINE_SRC SHELL
+# 列出Docker镜像，本地镜像都保存在/var/lib/docker下
+$ sudo docker images
+
+# 拉取Ubuntu镜像，默认的Registry是由Docker公司运营的，即Docker Hub
+$ sudo docker pull ubuntu
+
+# 拉取一个带标签的镜像，镜像和容器操作命令中，如果没有指定标签，默认都是latest
+$ sudo docker pull ubuntu:16.04
+
+# 查找镜像
+$ sudo docker search archlinux
+
+# 登录到Docker Hub，个人认证信息保存在~/.dockercfg文件中
+$ sudo docker login
+
+# 使用commit方式创建自定义镜像(先exit退出容器，容器退出即使会stop)
+$ sudo docker commit test_container liugdft/ubuntu_web_nginx
+$ sudo docker commit -m="This is my custome= image base on ubuntu" --author=\
+"liugdft" test_container liugdft/ubuntu:web_nginx
+
+# 从新建的镜像运行容器
+$ sudo docker run -it liugdft/ubuntu:web_nginx /bin/bash
+
+# 使用Dockerfile方式创建自定义镜像(需要新建一个文件夹，整个新建过程都在这个文件\
+夹范围内操作)
+Dockerfile示例：
+#+BEGIN_SRC TEXT
+# Version: 0.0.1
+FROM ubuntu:16.04
+MAINTAINER liugdftt "liugdft@126.com"
+RUN apt-get update
+RUN apt-get install -y nginx
+# 或者使用exec格式的RUN指令 
+# RUN ["apt-get", "install", "-y", "nginx"] 
+EXPOSE 80
+#+END_SRC
+
+# 运行Dockerfile
+$ mkdir new_image; cd new_image
+$ sudo docker build -t="liugdft/ubuntu:web_nginx" .
+
+# 从Git仓库构建新镜像(Git仓库内可以有.dockerignore，功能类似.gitignore)
+$ sudo docker build -t="liugdft/ubuntu:web_nginx" git@github.com:liugdft/\
+new_image
+
+# 忽略已生成的Docker构建缓存，从头开始构建(默认会从上次构建中断的地方开始构建)
+$ sudo docker build --no-cache -t="liugdft/ubuntu:web_nginx"
+
+# 查看镜像的构建过程
+$ sudo docker history liugdft/ubuntu:web_nginx
+
+# 启动容器时使用-p参数映射端口，可以通过使用/udp来制定个UDP端口
+$ sudo docker run -d -p 8080:80 --name nginx_container liugdft/ubuntu:\
+web_nginx nginx -g "deamon off;"
+
+# 映射特定的网络和端口
+$ sudo docker run -d -p 192.168.0.10:8080:80 --name nginx_container liugdft/ubuntu:\
+web_nginx nginx -g "deamon off;"
+
+# 使用-P参数映射Dockerfile中指定的所有端口，宿主机端口会由Docker随机指定
+$ sudo docker run -d -P --name nginx_container liugdft/ubuntu:\
+web_nginx nginx -g "deamon off;"
+
+# Dockerfile中支持的指令
+CMD、ENTRYPOINT、ADD、COPY、VOLUME、WORKDIR、USER、ONBUILD、ENV等
+
+# 将镜像推送到Docker Hub
+$ sudo docker push liugdft/ubuntu:web_nginx
+
+# 删除镜像
+$ sudo docker rmi liugdft/ubuntu:web_nginx
+
+# 一次删除所有镜像
+$ sudo docker rmi `docker images -a -q`
+
+#+END_SRC
+
+** 私有Registry
+#+BEGIN_SRC SHELL
+# 运行一个私有的Registry，也是基于Docker的服务
+$ sudo docker run -p 5000:5000 registry
+
+# 使用私有Registry为镜像打标签
+$ sudo docker tag liugdft/ubuntu:web_nginx docker.example.com:5000/liugdft/ubuntu:web_nginx
+
+# 推送镜像到私有Registry
+$ sudo docker push docker.example.com:5000/liugdft/ubuntu:web_nginx
+
+# 从私有Registry运行新的容器
+$ sudo docker run -it docker.example.com:5000/liugdft/ubuntu:web_nginx /bin/bash
+
+#+END_SRC
