@@ -1,0 +1,100 @@
+#+TITLE: Install Mitaka steps on CentOS
+#+OPTIONS: toc:2 (目录中只显示二级标题)
+#+OPTIONS: toc:nil (无目录)
+
+* CentOS VM setup
+** Setup nested KVM for VMs
+** Install OS and upgrade
+** Enable console ttyS0
+** Config IP and disable ipv6
+#+BEGIN_EXAMPLE
+$ vim /etc/hostname
+controller
+
+$ vim /etc/hosts
+10.0.0.11   controller
+10.0.0.21   network
+10.0.0.31   compute1
+10.0.0.41   storage_blk1
+10.0.0.51   storage_obj1
+
+## Check network interface UUID
+$ sudo systemctl start NetworkManager
+$ nmcli con
+
+$ sudo vim /etc/sysconfig/network-scripts/ifcfg-eth1
+TYPE=Ethernet
+BOOTPROTO=none
+DEFROUTE=yes
+PEERDNS=yes
+PEERROUTES=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=no
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_PEERDNS=yes
+IPV6_PEERROUTES=yes
+IPV6_FAILURE_FATAL=no
+NAME=eth1
+UUID=6cf59519-471a-4460-b7f5-0062ababdc18
+DEVICE=eth1
+ONBOOT=yes
+IPADDR=10.0.0.11
+PREFIX=24
+
+## gateway config for each network(none default gateway) ?
+$ sudo vim /etc/sysconfig/network-scripts/route-eth1
+10.0.0.0/24 via 10.0.0.1 dev eth1
+
+$ sudo vim /etc/sysctl.conf
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+
+$ sudo systemctl restart network
+#+END_EXAMPLE
+
+* Pre install
+** Random passwords:
+| *PASSWORD*           | *USAGE*                               |
+|----------------------+---------------------------------------|
+| 4b6ca45b3456f6052194 | root password for SQL database        |
+| abbc6feef31b6cc26035 | Password of user guest of RabbitMQ    |
+| 92d733e52b252eee749f | Database password of Identity service |
+| 8c94f6c7ae44610cf672 | Admin_Token(temp)                     |
+| 3a10c285a16faaf35c96 | Password of user admin                |
+| 903f05d328baa0102549 | Password of user demo                 |
+| d2d6904cc290217b380a | Database password for Image service   |
+| 0fe880fbd5f3299c1c99 | Password of Image service user glance |
+| 7ebed8af75aa68d39935 | Database password for Compute service |
+| 3e8872be7da36dd79ae3 | Password of Compute service user nova |
+| 85fe771fc3c49824eb85 |                                       |
+| ef21f6c8da47118aa392 |                                       |
+| 27a48e1ccc6eba973c19 |                                       |
+| ef595c27a3538bcdd692 |                                       |
+| 92ceb2bb877d247dd2e7 |                                       |
+| e1c0857299cc61848b00 |                                       |
+| c87ce592449cf67a9088 |                                       |
+| 179141291c9729505044 |                                       |
+| 6ba7ab98ba0841f182b5 |                                       |
+| 6400b216364664b4544a |                                       |
+| 65bec1ca07eab466f5df |                                       |
+| 43adcfa5b003e6adeb09 |                                       |
+| 430a8b10c061170f404d |                                       |
+| aaeb634cbadba49131df |                                       |
+| 4065567f61e32ebaa4b1 |                                       |
+| ac2cfd47cabd1f30adff |                                       |
+| 32ceb60600b023f0d953 |                                       |
+| fe76f4646facb2bec333 |                                       |
+| b8e176c358a4410e1c75 |                                       |
+| 62d91f9d6f7bce06f4e5 |                                       |
+
+* Install&Config
+** notice
+*** chrony的ntp数据包会被防火墙拦截，需要在controller设置防火墙允许ntp数据包，防火墙还会拦截其他协议，例如amqp
+#+BEGIN_EXAMPLE
+$ sudo firewall-cmd --zone=public --add-service=ntp --permanent
+$ sudo firewall-cmd reload
+
+$ sudo firewall-cmd --zone=public --permanent --add-port=5672/tcp
+$ sudo firewall-cmd --reload
+#+END_EXAMPLE

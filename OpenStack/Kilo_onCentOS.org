@@ -1,0 +1,334 @@
+#+TITLE: Install Kilo steps on CentOS
+#+OPTIONS: toc:2 (目录中只显示二级标题)
+#+OPTIONS: toc:nil (无目录)
+
+* Pre-installation(Environment setup)
+** Random passwords:
+| *PASSWORD*           | *USAGE*                                                   |
+|----------------------+-----------------------------------------------------------|
+| 4b6ca45b3456f6052194 | root password for SQL database                            |
+| abbc6feef31b6cc26035 | RabbitMQ password for user openstack                      |
+| 92d733e52b252eee749f | keystone password for keystone database and keystone user |
+| 8c94f6c7ae44610cf672 | [temp] admin token in keystone config                     |
+| 3a10c285a16faaf35c96 | admin password in keystone                                |
+| 903f05d328baa0102549 | demo password in keystone                                 |
+| d2d6904cc290217b380a | glance password for glance database and keystone user     |
+| 0fe880fbd5f3299c1c99 | glance password in keystone                               |
+| 7ebed8af75aa68d39935 |                                                           |
+| 3e8872be7da36dd79ae3 |                                                           |
+| 85fe771fc3c49824eb85 |                                                           |
+| ef21f6c8da47118aa392 |                                                           |
+| 27a48e1ccc6eba973c19 |                                                           |
+| ef595c27a3538bcdd692 |                                                           |
+| 92ceb2bb877d247dd2e7 |                                                           |
+| e1c0857299cc61848b00 |                                                           |
+| c87ce592449cf67a9088 |                                                           |
+| 179141291c9729505044 |                                                           |
+| 6ba7ab98ba0841f182b5 |                                                           |
+| 6400b216364664b4544a |                                                           |
+| 65bec1ca07eab466f5df |                                                           |
+| 43adcfa5b003e6adeb09 |                                                           |
+| 430a8b10c061170f404d |                                                           |
+| aaeb634cbadba49131df |                                                           |
+| 4065567f61e32ebaa4b1 |                                                           |
+| ac2cfd47cabd1f30adff |                                                           |
+| 32ceb60600b023f0d953 |                                                           |
+| fe76f4646facb2bec333 |                                                           |
+| b8e176c358a4410e1c75 |                                                           |
+| 62d91f9d6f7bce06f4e5 |                                                           |
+
+** VM1-CentOS: controller
+*** Hostname&IP
+
+#+CAPTION: IP地址分配
+#+LABEL: tbl:VM1_ip_table
+| *ETHCARD* |         *IP* | *comments*                   |
+|-----------+--------------+------------------------------|
+| eth0      | 192.168.0.81 | external network             |
+| eth1      |    10.0.0.11 | OpenStack management network |
+| eth2      |    10.0.1.11 | OpenStack tunnel network     |
+| eth3      |    10.0.2.11 | OpenStack storage network    |
+
+#+BEGIN_EXAMPLE
+$ sudo vim /etc/hostname
+controller
+
+$ sudo vim /etc/hosts
+10.0.0.11	controller
+10.0.0.21	network
+10.0.0.31	compute1
+10.0.0.41	storage_blk1
+10.0.0.51	storage_obj1
+
+$ sudo vim /etc/sysconfig/network-scripts/ifcfg-eth1
+TYPE=Ethernet
+BOOTPROTO=none
+DEFROUTE=yes
+PEERDNS=yes
+PEERROUTES=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=no
+IPV6_AUTOCONF=no
+IPV6_DEFROUTE=yes
+IPV6_PEERDNS=yes
+IPV6_PEERROUTES=yes
+IPV6_FAILURE_FATAL=no
+NAME=eth1
+UUID=316a232b-da0c-4cd4-8121-a281e53db7ec
+DEVICE=eth1
+ONBOOT=yes
+IPADDR=10.0.0.11
+PREFIX=24
+GATEWAY=10.0.0.1
+DNS1=10.0.0.1
+
+$ sudo vim /etc/sysconfig/network-scripts/ifcfg-eth2
+...
+$ sudo vim /etc/sysconfig/network-scripts/ifcfg-eth3
+...
+#+END_EXAMPLE
+
+*** NTP
+
+#+BEGIN_EXAMPLE
+$ sudo yum install ntp
+
+$ sudo vim /etc/ntp.conf
+restrict -4 default kod nomodify notrap
+restrict -6 default kod nomodify notrap
+server <ntp_server> iburst
+
+# 增加防火墙设置
+$ sudo firewall-cmd --add-service=ntp --permanent
+$ sudo firewall-cmd --reload
+
+$ sudo systemctl enable ntpd.service
+
+$ sudo systemctl start ntpd.service
+
+#+END_EXAMPLE
+
+*** Repository
+
+#+BEGIN_EXAMPLE
+$ sudo yum install http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
+
+$ sudo yum install http://rdo.fedorapeople.org/openstack-kilo/rdo-release-kilo-2.noarch.rpm
+
+$ sudo yum upgrade
+
+$ sudo yum install openstack-selinux
+#+END_EXAMPLE
+
+*** SQL database
+
+#+BEGIN_EXAMPLE
+$ sudo yum install mariadb mariadb-server MySQL-python
+
+$ sudo touch /etc/my.cnf.d/mariadb_openstack.cnf
+
+$ sudo vim /etc/my.cnf.d/mariadb_openstack.cnf
+[mysqld]
+bind-address = 10.0.0.11
+default-storage-engine = innodb
+innodb_file_per_table
+collation-server = utf8_general_ci
+init-connect = 'SET NAMES utf8'
+character-set-server = utf8
+
+$ sudo systemctl enable mariadb.service
+
+$ sudo systemctl start mariadb.service
+
+$ sudo mysql_secure_installation
+<一路Y>
+#+END_EXAMPLE
+
+*** RabitMQ
+
+#+BEGIN_EXAMPLE
+$ sudo yum install rabbitmq-server
+
+$ sudo systemctl enable rabbitmq-server.service
+
+$ sudo systemctl start rabbitmq-server.service
+
+$ sudo rabbitmqctl add_user openstack <rabbitmq_pwd>
+
+$ sudo rabbitmqctl set_permissions openstack ".*" ".*" ".*"
+#+END_EXAMPLE
+
+** VM2-CentOS: network
+*** Hostname&IP
+
+#+CAPTION: IP地址分配
+#+LABEL: tbl:VM2_ip_table
+| *ETHCARD* |         *IP* | *comments*                   |
+|-----------+--------------+------------------------------|
+| eth0      | 192.168.0.82 | external network             |
+| eth1      |    10.0.0.21 | OpenStack management network |
+| eth2      |    10.0.1.21 | OpenStack tunnel network     |
+| eth3      |    10.0.2.21 | OpenStack storage network    |
+
+*** NTP
+
+#+BEGIN_EXAMPLE
+$ sudo yum install ntp
+
+$ sudo vim /etc/ntp.conf
+restrict -4 default kod nomodify notrap
+restrict -6 default kod nomodify notrap
+server controller iburst
+
+# 增加防火墙设置
+$ sudo firewall-cmd --add-service=ntp --permanent
+$ sudo firewall-cmd --reload
+
+$ sudo systemctl enable ntpd.service
+
+$ sudo systemctl start ntpd.service
+#+END_EXAMPLE
+
+*** Repository
+
+#+BEGIN_EXAMPLE
+$ sudo yum install http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
+
+$ sudo yum install http://rdo.fedorapeople.org/openstack-kilo/rdo-release-kilo-2.noarch.rpm
+
+$ sudo yum upgrade
+
+$ sudo yum install openstack-selinux
+#+END_EXAMPLE
+
+** VM3-CentOS: compute1
+*** Hostname&IP
+
+#+CAPTION: IP地址分配
+#+LABEL: tbl:VM3_ip_table
+| *ETHCARD* |         *IP* | *comments*                   |
+|-----------+--------------+------------------------------|
+| eth0      | 192.168.0.83 | external network             |
+| eth1      |    10.0.0.31 | OpenStack management network |
+| eth2      |    10.0.1.31 | OpenStack tunnel network     |
+| eth3      |    10.0.2.31 | OpenStack storage network    |
+
+*** NTP
+
+#+BEGIN_EXAMPLE
+$ sudo yum install ntp
+
+$ sudo vim /etc/ntp.conf
+restrict -4 default kod nomodify notrap
+restrict -6 default kod nomodify notrap
+server controller iburst
+
+# 增加防火墙设置
+$ sudo firewall-cmd --add-service=ntp --permanent
+$ sudo firewall-cmd --reload
+
+$ sudo systemctl enable ntpd.service
+
+$ sudo systemctl start ntpd.service
+#+END_EXAMPLE
+
+*** Repository
+
+#+BEGIN_EXAMPLE
+$ sudo yum install http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
+
+$ sudo yum install http://rdo.fedorapeople.org/openstack-kilo/rdo-release-kilo-2.noarch.rpm
+
+$ sudo yum upgrade
+
+$ sudo yum install openstack-selinux
+#+END_EXAMPLE
+
+** VM4-CentOS: storage_blk1
+*** Hostname&IP
+
+#+CAPTION: IP地址分配
+#+LABEL: tbl:VM4_ip_table
+| *ETHCARD* |         *IP* | *comments*                   |
+|-----------+--------------+------------------------------|
+| eth0      | 192.168.0.84 | external network             |
+| eth1      |    10.0.0.41 | OpenStack management network |
+| eth2      |    10.0.1.41 | OpenStack tunnel network     |
+| eth3      |    10.0.2.41 | OpenStack storage network    |
+
+*** NTP
+
+#+BEGIN_EXAMPLE
+$ sudo yum install ntp
+
+$ sudo vim /etc/ntp.conf
+restrict -4 default kod nomodify notrap
+restrict -6 default kod nomodify notrap
+server controller iburst
+
+# 增加防火墙设置
+$ sudo firewall-cmd --add-service=ntp --permanent
+$ sudo firewall-cmd --reload
+
+$ sudo systemctl enable ntpd.service
+
+$ sudo systemctl start ntpd.service
+#+END_EXAMPLE
+
+*** Repository
+
+#+BEGIN_EXAMPLE
+$ sudo yum install http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
+
+$ sudo yum install http://rdo.fedorapeople.org/openstack-kilo/rdo-release-kilo-2.noarch.rpm
+
+$ sudo yum upgrade
+
+$ sudo yum install openstack-selinux
+#+END_EXAMPLE
+
+** VM5-CentOS: storage_obj1
+*** Hostname&IP
+
+#+CAPTION: IP地址分配
+#+LABEL: tbl:VM2_ip_table
+| *ETHCARD* |         *IP* | *comments*                   |
+|-----------+--------------+------------------------------|
+| eth0      | 192.168.0.85 | external network             |
+| eth1      |    10.0.0.51 | OpenStack management network |
+| eth2      |    10.0.1.51 | OpenStack tunnel network     |
+| eth3      |    10.0.2.51 | OpenStack storage network    |
+
+*** NTP
+
+#+BEGIN_EXAMPLE
+$ sudo yum install ntp
+
+$ sudo vim /etc/ntp.conf
+restrict -4 default kod nomodify notrap
+restrict -6 default kod nomodify notrap
+server controller iburst
+
+# 增加防火墙设置
+$ sudo firewall-cmd --add-service=ntp --permanent
+$ sudo firewall-cmd --reload
+
+$ sudo systemctl enable ntpd.service
+
+$ sudo systemctl start ntpd.service
+#+END_EXAMPLE
+
+*** Repository
+
+#+BEGIN_EXAMPLE
+$ sudo yum install http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
+
+$ sudo yum install http://rdo.fedorapeople.org/openstack-kilo/rdo-release-kilo-2.noarch.rpm
+
+$ sudo yum upgrade
+
+$ sudo yum install openstack-selinux
+#+END_EXAMPLE
+
+* Insall Identity service
+** 
