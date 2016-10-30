@@ -14,6 +14,8 @@ git config --global core.quotepath false    # 设置为默认不转义
 git config --global user.name "LiuGDFT"           # 初始化配置，设置用户名
 git config --global user.email "liugdft@126.com"  # 初始化配置，设置mmail
 git config --global merge.tool vimdiff    # 指定差异分析工具
+git config --global http.proxy 'socks5://127.0.0.1:1080'    # 设置git使用代理
+git config --global https.proxy 'socks5://127.0.0.1:1080'
 git config --list                                 # 检查已有的配置
 
 *** 文件基本操作

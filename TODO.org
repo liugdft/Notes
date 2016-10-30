@@ -1,4 +1,7 @@
 * Todo notes
+** 2016.10.30
+- [ ] 升级Desktop和Nubia的vim和emacs
+
 ** Linux [1/1] 
 - [X] screen & tmux
 

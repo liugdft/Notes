@@ -1,0 +1,10 @@
+* Archlinux
+- sudo pacman -Syyu
+
+* vim
+- :PluginUpdate
+
+* emacs
+- Update Spacemacs
+- Update Packages
+
