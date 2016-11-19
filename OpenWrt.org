@@ -1,0 +1,7 @@
+#+TITLE: OpenWrt
+#+OPTIONS: toc:2 (目录中只显示二级标题)
+#+OPTIONS: toc:nil (无目录)
+#+TODO: TODO(t)  TBC(c) FAILED(f) | DONE(d) 
+
+* General topics
+- eth1 is always the WAN interface by default

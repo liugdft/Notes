@@ -1,0 +1,12 @@
+* Qemu-KVM基本操作
+** 运行虚拟机
+kvm -m 1024 -smp 2 -boot order=cd -hda /home/liugdft/vm-image.img -cdrom /home/liugdft/xxxx.iso                         # 运行一个虚拟机
+kvm -m 1024 -smp 2 -boot order=cd -hda /home/liugdft/vm-image.img -cdrom /home/liugdft/xxxx.iso -vnc :0                 # 运行一个虚拟机，并使用VNC方式显示
+
+** 创建镜像文件
+qemu-img create -f qcow2 test.qcow2 10G           # 创建一个qcow2格式的镜像文件
+qemu-img create -f qcow2 -b base_image.img test.qcow2 10G                       # 创建镜像文件，并指定基础镜像
+qemu-img create -f qcow2 -o backing_file=base_image.img,size=10G test.qcow2     # 创建镜像文件，并指定基础镜像
+qemu-img info test.img                            # 查看test.img镜像文件的信息
+qemu-img -h                                       # 查看命令帮助
+

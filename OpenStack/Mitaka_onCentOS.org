@@ -47,7 +47,7 @@ $ sudo vim /etc/sysconfig/network-scripts/route-eth1
 10.0.0.0/24 via 10.0.0.1 dev eth1
 
 $ sudo vim /etc/sysctl.conf
-net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.allpython-openstackcl.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
 
 $ sudo systemctl restart network
@@ -69,13 +69,13 @@ $ sudo systemctl restart network
 | 3e8872be7da36dd79ae3 | Password of Compute service user nova    |
 | 85fe771fc3c49824eb85 | Password of Network service user neutron |
 | NEUTRON_DBPASS       | Database password for Network service    |
-| 27a48e1ccc6eba973c19 |                                          |
-| ef595c27a3538bcdd692 |                                          |
-| 92ceb2bb877d247dd2e7 |                                          |
-| e1c0857299cc61848b00 |                                          |
-| c87ce592449cf67a9088 |                                          |
-| 179141291c9729505044 |                                          |
-| 6ba7ab98ba0841f182b5 |                                          |
+| 27a48e1ccc6eba973c19 | Database password for Blk service        |
+| ef595c27a3538bcdd692 | Password of Blk service user cinder      |
+| 92ceb2bb877d247dd2e7 | Database password for SharedFS service   |
+| e1c0857299cc61848b00 | Password of SharedFS service user manila |
+| c87ce592449cf67a9088 | Password of Obj service user swift       |
+| 179141291c9729505044 | HASH_PATH_SUFFIX                         |
+| 6ba7ab98ba0841f182b5 | HASH_PATH_PREFIX                         |
 | 6400b216364664b4544a |                                          |
 | 65bec1ca07eab466f5df |                                          |
 | 43adcfa5b003e6adeb09 |                                          |
@@ -90,11 +90,15 @@ $ sudo systemctl restart network
 
 * Install&Config
 ** notice
-*** chrony的ntp数据包会被防火墙拦截，需要在controller设置防火墙允许ntp数据包，防火墙还会拦截其他协议，例如amqp
+*** chrony的ntp数据包会被防火墙拦截，需要在controller设置防火墙允许ntp数据包，防火墙还会拦截其他协议，例如amqp(5672), mysql(3306)
+- 被防火墙拦截的表现：抓包会发现 ICMP host 10.0.0.11 unreachable - admin prohibited 错误
 #+BEGIN_EXAMPLE
 $ sudo firewall-cmd --zone=public --add-service=ntp --permanent
 $ sudo firewall-cmd reload
 
 $ sudo firewall-cmd --zone=public --permanent --add-port=5672/tcp
+$ sudo firewall-cmd --reload
+
+$ sudo firewall-cmd --zone=public --permanent --add-port=3306/tcp
 $ sudo firewall-cmd --reload
 #+END_EXAMPLE

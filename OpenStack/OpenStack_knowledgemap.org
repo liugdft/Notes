@@ -1,0 +1,54 @@
+#+TITLE: Openstack knowledge map
+#+OPTIONS: toc:2 (目录中只显示二级标题)
+#+OPTIONS: toc:nil (无目录)
+#+TODO: TODO(t)  TBC(c) FAILED(f) | DONE(d) 
+
+** [#A] Linux
+*** Linux 配置和管理
+*** Linux本地源架设，或安装源缓存
+*** Shell
+** [#C] GRUB
+** [#B] emacs
+*** org-mode
+*** init.el/.emacs 配置
+*** packages
+** [#B] vim
+*** 基本使用
+** [#A] 虚拟化
+*** KVM
+*** ESXi
+** [#A] 网络
+*** DHCP
+*** NAT、bridge、tun、macvlan、macvtap
+*** Open vSwitch
+*** Nutron
+** [#A] Python
+*** 基本编程、阅读、修改
+*** 调试
+*** pypy本地源假设，或安装源缓存
+** [#C] Git
+*** 基本应用
+*** GitHub
+** [#C] Python Unittest
+** [#B] 自动化配置管理工具
+*** puppet
+ - puppet提供的配置语言更通用和高级一些，用户不需要懂ruby语言
+ - puppet的用户很多，象Google、Redhat等大公司都在用它
+*** ansible
+ - ansible方便简单，无需agent
+ - 文档丰富，选择的用户较多，已经比较稳定了
+ - 大量服务器并发效率上不如salt
+** [#B] 存储
+*** 块存储
+ - ceph sheepdog glusterfs
+ - EBS(AWS) 
+*** 对象存储
+ - swift ceph 
+ - S3(AWS)
+*** 文件存储(支持POSIX接口)
+
+ - ceph HDFS
+*** xfs文件系统
+** [#C] raid & JBOD(还有一个JBOD基础上的SBOD)
+ - raid模拟器（仿真器）
+ - linux 软件raid：mdadm,支持各种raid和linear模式（类似JBOD）

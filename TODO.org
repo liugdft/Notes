@@ -1,11 +1,20 @@
-* Todo notes
-** 2016.10.30
-- [ ] 升级Desktop和Nubia的vim和emacs
+#+TITLE: TODO list
+#+OPTIONS: toc:2 (目录中只显示二级标题)
+#+OPTIONS: toc:nil (无目录)
+#+TODO: TODO(t)  TBC(c) FAILED(f) | DONE(d) 
 
-** Linux [1/1] 
-- [X] screen & tmux
+* Plan on 2016.11.07 [\]
+- [ ] 测试并深入了解linux bridge, NAT, tun, tap, macvlan, macvtap的工作原理
 
-** Application [1/3]
+* DONE Plan on 2016.10.30 [1/1]
+  CLOSED: [2016-10-31 Mon 11:29]
+- [X] 升级Desktop和Nubia的vim和emacs
+
+* DONE Linux [1/1] 
+  CLOSED: [2016-10-31 Mon 11:29]
+- [X] screen &  tmux
+
+* TBC Application [1/3]
 - [ ] ngrok
 - [ ] shadowsocks
 - [X] vim & emacs plugin admin(add, del, update)

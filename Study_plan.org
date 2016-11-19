@@ -1,10 +1,36 @@
-* Study_plan
-** TODO 2016.09.24 - 2016.09.30 [0/1]
+#+TITLE: Study plan by week
+#+AUTHOR: LiuGDFT
+#+DATE: 2016.11.16
+#+OPTIONS: toc:t (自动生成目录索引)
+#+OPTIONS: num:t (生成索引时是否为章节自动编号)
+#+LINK_HOME: xxx
+#+LINK_UP: xxx
+
+* 总的学习目标：
+- openstack系统部署：多种部署方式都练习一遍，包括手动部署(CentOS和Ubuntu平台)、自动部署工具(1.PuppetOpenstack 2.Ansible 3.Fuel 4.Ubuntu juju Others:Redhat RDO、Devstack)
+- 运行：至少在每套部署好的环境上模拟3个租户并做日常操作
+- 深入学习：neutron
+- 另需学习：Docker
+* To be planned
+- [x] ceph, swift, sheepdog installation(可选glusterfs) 
+- [ ] Ansible, Puppet
+- [ ] devstack, fuel, Juju, RDO
+* 2016.11.14 - 2016.11.20 [0/2]
+- [ ] Ansible
+- [ ] Network(NAT, dnsmasq, brctl, tun, macvlan, macvtap, etc)
+* TBC 2016.11.07 - 2016.11.13 [0/2]
+- [ ] Network(NAT, dnsmasq, brctl, tun, macvlan, macvtap, etc)
+- [ ] Open vSwitch, neutron
+* DONE 2016.09.31 - 2016.11.06 [0/2]
+  CLOSED: [2016-11-05 Sat 16:45]
 - [ ] Openstack installation on CentOS
 
-** DONE 2016.09.17 - 2016.10.23 [1/1]
-CLOSED: [2016-10-24 Mon 17:46]
+* TBC 2016.10.24 - 2016.10.30 [0/1]
+- [ ] Openstack installation on CentOS
+
+* DONE 2016.10.17 - 2016.10.23 [1/1]
+  CLOSED: [2016-10-24 Mon 17:46]
 - [X] Python: Python参考手册
 
-** TODO 2016.09.10 - 2016.09.16 [0/1]
+* TBC 2016.10.10 - 2016.10.16 [0/1]
 - [ ] Openstack installation on CentOS

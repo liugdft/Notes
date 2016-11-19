@@ -1,10 +1,19 @@
-* Archlinux
+* Devices
+- Desktop
+- Laptop
+- Raspberry Pi
+- Laptop2
+- Archlinux@Nubia
+
+* Archlinux : every week, on Saturday morning
 - sudo pacman -Syyu
 
-* vim
+* vim : every week, on Saturday morning
 - :PluginUpdate
 
-* emacs
+* emacs : every week, on Saturday morning
 - Update Spacemacs
 - Update Packages
 
+* on my zsh : every week, on Study morning 
+- upgrade_oh_my_zsh

@@ -1,0 +1,37 @@
+* Mint初始安装后的基本设置
+1. 设置软件源，升级系统
+2. 安装显卡驱动
+3. 修改swappiness：
+sudo gedit /etc/sysctl.conf
+添加：
+vm.swappiness=10
+
+4. 修改LC_CTYPE
+sudo gedit /etc/default/locale
+添加：
+LC_CTYPE="zh_CN.UTF-8"
+
+5. 修改分辨率：
+Ubuntu 10.04 安装Nvidia显卡后开机花屏（分辨率低）完美解决
+sudo apt-get install v86d
+sudo gedit /etc/default/grub
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash nomodeset video=uvesafb:mode_option=1920x1080-32,mtrr=3,scroll=ywrap"
+GRUB_GFXMODE=1920x1080
+sudo gedit /etc/initramfs-tools/modules
+uvesafb mode_option=1920x1080-32 mtrr=3 scroll=ywrap
+强制使用Framebuffer:
+echo FRAMEBUFFER=y | sudo tee /etc/initramfs-tools/conf.d/splash
+更新grub和initramfs:
+sudo update-grub2
+sudo update-initramfs -u
+重启
+
+6. 备份Linux(将要备份的目录作为当前目录)：
+sudo tar -g /xxx/increment_backup -czvpf /xxx/Mint_backup_`date +'%Y%m%d'`.tar.gz --exclude='./lost+found' --exclude='./media' --exclude='./mnt' --exclude='./proc' --exclude='./sys' --exclude='./tmp' --ignore-failed-read ./
+
+sudo tar -g /xxx/increment_backup -czvpf /xxx/Mint_backup_`date +'%Y%m%d'`.tar.gz --exclude='./lost+found/×' --exclude='./media/×' --exclude='./mnt/×' --exclude='./proc/×' --exclude='./sys/×' --exclude='./tmp/×' --ignore-failed-read ./
+
+有的文档里教你用 --exclude=/proc 这样的形式, 我自己用的是 --exclude=/proc/*, 两者的差别在于, 前者是忽略了整个 /proc 目录, 也就是说, 在备份出来的 tar.bz2 包里, 解压缩后, 没有 /proc 这个目录; 而我的写法的结果是, /proc 目录本身被保留了, 只是忽略了 /proc 里面的所有东西. 我个人觉得这样更合适, 到时恢复系统的时候, 这些目录就不必自己去创建, 然后还得考虑权限什么的.
+
+7. 还原
+tar xzvpf /xxx/Mint_backup_20150418.tar.gz -C ./

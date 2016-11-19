@@ -1,0 +1,9 @@
+1. 备份Linux(将要备份的目录作为当前目录)：
+sudo tar -g /xxx/increment_backup -czvpf /xxx/Mint_backup_`date +'%Y%m%d'`.tar.gz --exclude='./lost+found' --exclude='./media' --exclude='./mnt' --exclude='./proc' --exclude='./sys' --exclude='./tmp' --ignore-failed-read ./
+
+sudo tar -g /xxx/increment_backup -czvpf /xxx/Mint_backup_`date +'%Y%m%d'`.tar.gz --exclude='./lost+found/*' --exclude='./media/*' --exclude='./mnt/*' --exclude='./proc/*' --exclude='./sys/*' --exclude='./tmp/*' --ignore-failed-read ./
+
+有的文档里教你用 --exclude=/proc 这样的形式, 我自己用的是 --exclude=/proc/*, 两者的差别在于, 前者是忽略了整个 /proc 目录, 也就是说, 在备份出来的 tar.bz2 包里, 解压缩后, 没有 /proc 这个目录; 而我的写法的结果是, /proc 目录本身被保留了, 只是忽略了 /proc 里面的所有东西. 我个人觉得这样更合适, 到时恢复系统的时候, 这些目录就不必自己去创建, 然后还得考虑权限什么的.
+
+2. 还原
+tar xzvpf /xxx/Mint_backup_20150418.tar.gz -C ./

@@ -1,0 +1,45 @@
+#+TITLE: 
+#+AUTHOR: LiuGDFT
+#+DATE: 2016.11.14
+#+OPTIONS: toc:t (自动生成目录索引)
+#+OPTIONS: num:t (生成索引时是否为章节自动编号)
+#+LINK_HOME: xxx
+#+LINK_UP: xxx
+
+
+xxx steps:
+#+BEGIN_SRC sh
+<shell script content>
+#+END_SRC
+
+xxx file:
+#+BEGIN_SRC text
+<filepath and filename>
+--------------------------------------------------------------------------------
+<config file(original text in file)>
+#+END_SRC
+
+xxx quote:
+#+BEGIN_QUOTE
+<something wants to emphasis, warning, notice, comments, etc >
+#+END_QUOTE
+
+xxx example:
+#+BEGIN_EXAMPLE
+# <root command>
+$ <command>
+<command result>
+#+END_EXAMPLE
+
+table:
+#+CAPTION: 表格的标题
+| 1 | one   |
+| 2 | two   |
+| 3 | three |
+| 4 | four  |
+
+image:
+#+CAPTION: 图片的标题
+#+ATTR_HTML: :width 400(数值为空表示原大小)
+(图片保存目录，每个文件夹下新建.images目录用于保存图片，图片文件名为uuidgen生成的uuid，对于需要二次修改的图片，需要同时保存原图和修改图，原图命名<uuid>_original.xxx)
+(对于其他类型的附件，每个文件夹下新建.attachments目录用于存放)

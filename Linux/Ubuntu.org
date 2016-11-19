@@ -1,0 +1,127 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2011-12-20T13:34:36+08:00
+
+====== 使用笔记 ======
+Created Tuesday 20 December 2011
+
+把ubuntu窗口按钮调到右边
+gconf-editor /apps/metacity/general/button_layout
+
+加载iso文件，消除文件名乱码
+mount -t iso9660 -o loop,utf8 myfile.iso /mnt/iso
+挂载为可写
+mount -t iso9660 -o rw,loop,utf8 myfile.iso /mnt/iso
+
+
+zip乱码
+unzip -O CP936 xxx.zip (用GBK, GB18030也可以)？
+
+
+取消最大化：Alt+F5
+移动窗口：Alt+F7
+改变窗口大小：Alt+F8
+窗口最小化：ALT+F9
+窗口最大化：ALT+F10
+屏幕锁定：Alt+Ctrl+L
+显示桌面：Ctrl+Alt+D
+切换桌面：Ctrl+Alt+Shift+左右方向键，
+web时按 "/" 键等于查找功能，桌面或者目录时按" /" 等于"打开.."；
+目录中快速定位文件可直接输入“文件名”，比如/目录下，输入b直接定位到bin文件夹；
+
+
+总结:
+(1) CTRL+Z停止进程并放入后台
+(2) jobs 显示当前暂停的进程
+(3) bg %N 使第N个任务在后台运行(%前有空格)
+(4) fg %N 使第N个任务在前台运行
+默认bg,fg不带%N时表示对最后一个进程操作!
+
+
+linux skype 使用国内卡方法：
+手机：0099008668033+0+手机号
+固话：0099008668033＋区号＋固定电话号码
+
+
+备份系统
+tar -cvpzf /media/sda7/backup.tgz --exclude=/proc --exclude=/lost+found --exclude=/mnt --exclude=/sys --exclude=/media /
+sudo tar -cpzf /media/Data/backup_20101008.tgz --exclude=/proc --exclude=/lost+found --exclude=/mnt --exclude=/sys --exclude=/media --exclude=/home/liugdft/Ubuntu\ One --exclude=/home/liugdft/下载 --exclude=/tmp /
+还原系统
+tar -xvpzf /media/sda7/backup.tgz -C /
+
+
+解 压zip文件乱码
+在Ubuntu下使用unzip解压Widnows环境下生成的zip文件，会发生文件名或者目录名乱码现象，解决办法是使用 7-zip和convmv。
+安装7-zip和convmv：
+sudo apt-get install convmv p7zip-full
+解压zip文件：
+LANG=C 7z e zip_file
+convmv -f gbk -t utf8 -r --notest *
+
+
+gvfs-gdu-volume, udisks-daemon and dbus-daemon 占用CPU过高的问题，是因为对光驱操作的bug造成的，解决方法：sudo hal-disable-polling --device /dev/sr0,或者 sudo stop udev 确定是udev从147.6升级到147-6.1的BUG ！在新立得中把udev版本锁定，以后更新就一劳永逸了。系统没有任何损失 弹出光驱一次CPU就会降下来！
+
+
+gvim 乱码，invalid input string:
+cd /usr/share/vim/vim72/lang
+sudo ln -s menu_zh_cn.utf-8.vim menu_zh_cn.utf8.vim
+
+
+删除旧的内核
+dpkg --get-selections|grep linux
+sudo apt-get remove linux-image-2.6.24-16-generic
+sudo apt-get remove linux-headers-2.6.24-16
+然后编辑启动文件： /boot/grub/grub.cfg
+
+
+amule中文乱码
+env LANG=zh_CN.GBK amule
+
+
+http://67.220.92.21/bbs/index.php
+
+
+gedit 显示windows下的txt文件乱码，因为txt默认以GB2312编码存储
+gconf-editor /apps/gedit-2/preferences/encodings/auto_detected,在弹出对话框中点选Add，添加Values值为GB2312,确定后选中，点选Up按钮将其移至第一位。
+
+
+gvim 显示txt文件乱码
+vim的配置文件里写: 
+set fileencodings=ucs-bom,utf-8,cp936,gb18030,iso-8859-1
+set encoding=utf-8
+
+
+删除wine留下的无用的打开方式
+在目录“~/.local/share/applications”中有好多wine的文件统统删掉
+
+
+rhythmbox播放器乱码
+sudo apt-get install python-mutagen
+mid3iconv -e GBK *.mp3
+#文件名由GBK转换为UTF8 
+convmv -r -f cp936 -t utf8 --notest --nosmart *
+#文件内容由GBK到UTF8 
+iconv -f gbk -t utf8 file 
+
+
+pdf乱码
+sudo apt-get install poppler-data
+sudo mv /etc/fonts/conf.d/49-sansserif.conf /etc/fonts/conf.d/49-sansserif.conf.backup
+或者
+sudo gedit /etc/fonts/conf.d/49-sansserif.conf
+找到倒数第4行的 sans-serif 替换为 文泉驿正黑，然后重启X
+
+Ubuntu 10.04 安装Nvidia显卡后开机花屏（分辨率低）完美解决
+sudo apt-get install v86d hwinfo
+sudo hwinfo --framebuffer
+sudo gedit /etc/default/grub
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash nomodeset video=uvesafb:mode_option=1280x800-24,mtrr=3,scroll=ywrap"
+GRUB_GFXMODE=1280x800
+sudo gedit /etc/initramfs-tools/modules
+uvesafb mode_option=1280x800-24 mtrr=3 scroll=ywrap
+强制使用Framebuffer:
+echo FRAMEBUFFER=y | sudo tee /etc/initramfs-tools/conf.d/splash
+更新grub和initramfs:
+sudo update-grub2
+sudo update-initramfs -u
+重启

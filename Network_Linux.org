@@ -1,0 +1,120 @@
+#+TITLE: Linux network technology
+#+OPTIONS: toc:2 (目录中只显示二级标题)
+#+OPTIONS: toc:nil (无目录)
+#+TODO: TODO(t)  TBC(c) FAILED(f) | DONE(d) 
+
+#+BEGIN_QUOTE
+- 用于学习linux的网络工具 brctl, tun, tap, macvlan, macvtap, bond等，这些是虚拟化网络的基础
+- 默认情况下，创建虚拟的网络接口时，如果没有指定mac地址，会自动随机生成一个
+- /dev/xxx(如tap0) 为字符设备，为程序收发数据提供接口
+- xxx(如tap0) 为网络接口本身，提供相应的驱动支持
+- ip命令可以完成所有的网络设置，以后多用ip，可以不用ifconfig了
+#+END_QUOTE
+* linux bridge
+- driver: bridge
+- bridge新建的时候会随机bridge的mac地址会动态变，以所有bridge接口中mac地址最小的一个为自身mac
+* OpenvSwitch
+- driver: openvswitch
+- 和linux bridge同为linux的软交换技术，但是比bridge功能更强大
+* NAT device
+- iptable
+- NAT分为SNAT和DNAT，SNAT既为从内部主机先发起的访问外网的数据流做NAT，DNAT既为从外网先发起的访问数据流做NAT，浮动ip一般用于把内网ip映射为外网ip，方便外网访问
+* TUN device
+- driver: tun
+- TUN、TAP设备工作方式相同，区别在于，TUN设备工作在IP层，收发IP层数据包，不能与物理网卡做bridge，但可以通过三层交换（路由或NAT）与物理网卡相通。
+TAP设备工作在MAC层，收发MAC层数据包，可以与物理网卡做bridge，支持MAC层功能。tun表示虚拟的是点对点设备，tap表示虚拟的是以太网设备.
+
+#+BEGIN_EXAMPLE
+# modprobe tun
+# ip tuntap add dev tun0 mode tun
+# ifconfig tun0 ...
+# ip tuntap del dev tun0 mode tun
+
+[liugdft@Test1-VM ~]$ sudo ip tuntap add dev tun0 mode tun
+[liugdft@Test1-VM ~]$ sudo ip tuntap add dev tap0 mode tap
+[liugdft@Test1-VM ~]$ ifconfig tun0
+tun0: flags=4240<POINTOPOINT,NOARP,MULTICAST>  mtu 1500
+        unspec 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  txqueuelen 500  (UNSPEC)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+[liugdft@Test1-VM ~]$ ifconfig tap0
+tap0: flags=4098<BROADCAST,MULTICAST>  mtu 1500
+        ether 9a:97:f5:7d:54:aa  txqueuelen 500  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+#+END_EXAMPLE
+* TAP device
+- driver: tun
+#+BEGIN_EXAMPLE
+# modprobe tun
+# ip tuntap add dev tap0 mode tap
+# ifconfig tap0 ...
+# ip tuntap del dev tap0 mode tap
+#+END_EXAMPLE
+* macvlan device
+- driver: macvlan
+#+BEGIN_EXAMPLE
+# modeprobe macvlan
+# ip link add link eth0 name macvlan0 type macvlan mode bridge|vepa|private
+# ifconfig macvlan0 ...
+# ip addr ...
+# ip link delete macvlan0 type macvlan
+#+END_EXAMPLE
+* macvtap device
+- driver: macvlan
+#+BEGIN_EXAMPLE
+# modeprobe macvlan
+# ip link add link eth0 name macvtap0 type macvtap mode bridge|vepa|private
+# ifconfig macvtap0 ...
+# ip addr ...
+# ip link delete macvtap0 type macvtap
+#+END_EXAMPLE
+* veth配对设备(veth pair)或OVS配对端口(patch port)，用于充当虚拟的网线
+#+BEGIN_EXAMPLE
+$ sudo ip link add name veth0 type veth peer name veth1
+$ sudo ip link delete veth0 type veth
+#+END_EXAMPLE
+#+BEGIN_QUOTE
+删除1个veth设备，对端相连的veth设备也会被一起删除
+#+END_QUOTE
+* bond
+- driver: bonding
+- bond技术用于多网口做负载均衡、主备（提供硬件冗余）或其他模式，缺点是bond更改了网口的驱动，其网口不能被用作其他用途了
+* VLAN
+* GRE隧道
+* VxLAN隧道
+* dhcp&dns
+- 主机系统中启动一个dnsmasq来负责管理
+* libvirt网络类型即为上面基本类型的组合
+* 几个比较难,但是要掌握的linux网络技术
+** iptables
+** ebtables(二层的iptables)
+** SELINUX
+** netns(net namespace)
+对net namespace的操作：
+#+BEGIN_EXAMPLE
+$ sudo ip netns add ns1
+$ sudo ip set tap1 netns ns1
+$ sudo ip netns exec ns1 ip link set dev tap1 up
+$ sudo ip netns exec ip link list
+#+END_EXAMPLE
+** PXE(网络启动)
+- PXE client集成在网卡里，包含DHCP client，tftp client等
+- 服务端包含了HDCP服务端（用于分配ip和指定tftp位置）、tftp服务端
+** haproxy(负载均衡器)
+* 延伸的网络知识点：
+** 传统二层网络
+- VLAN
+- GRE隧道
+- VxLAN隧道
+- MPLS(二层VPN隧道?)
+- STT(?)
+- LISP(位置/身份分离协议，解决跨广域网数据中心之间同租户虚拟机访问前、迁移的问题，解决的是网络资源移动性的问题)
+** 大二层网络
+- DVR(分布式虚拟路由)
+- OVT(覆盖网络传输虚拟化)

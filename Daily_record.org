@@ -1,0 +1,7 @@
+#+TITLE: 
+#+OPTIONS: toc:2 (目录中只显示二级标题)
+#+OPTIONS: toc:nil (无目录)
+#+TODO: TODO(t)  TBC(c) FAILED(f) | DONE(d) 
+
+* 2016.11.01
+Midnight Commander是一个具有友好的用户界面而且功能强大的文件管理器和可视化shell

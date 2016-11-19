@@ -1,4 +1,10 @@
 * Daily questions
+** 2016.11.03 [/]
+- The Object Storage service does not use an SQL database on the controller node. Instead, it uses distributed SQLite databases on each storage node.
+distributed SQLite database?
+
+- xfs filesystem
+
 ** 2016.09.04 [2/2]
 - [X] emacs server 模式
 - [X] emacs vim 的yank缓存和粘贴板的区别？ 能否公用？
