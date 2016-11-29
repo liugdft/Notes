@@ -15,9 +15,12 @@
 - [x] ceph, swift, sheepdog installation(可选glusterfs) 
 - [ ] Ansible, Puppet
 - [ ] devstack, fuel, Juju, RDO
-* 2016.11.14 - 2016.11.20 [0/2]
-- [ ] Ansible
-- [ ] Network(NAT, dnsmasq, brctl, tun, macvlan, macvtap, etc)
+* 2016.11.21 - 2016.11.27
+- [ ] 自动化部署（devstack，RDO，juju，fuel，puppet）
+* DONE 2016.11.14 - 2016.11.20 [2/2]
+  CLOSED: [2016-11-21 Mon 05:13]
+- [X] Ansible
+- [X] Network(NAT, dnsmasq, brctl, tun, macvlan, macvtap, etc)
 * TBC 2016.11.07 - 2016.11.13 [0/2]
 - [ ] Network(NAT, dnsmasq, brctl, tun, macvlan, macvtap, etc)
 - [ ] Open vSwitch, neutron

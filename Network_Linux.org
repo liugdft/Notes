@@ -118,3 +118,5 @@ $ sudo ip netns exec ip link list
 ** 大二层网络
 - DVR(分布式虚拟路由)
 - OVT(覆盖网络传输虚拟化)
+* 其他
+** HTTPS配置和证书
